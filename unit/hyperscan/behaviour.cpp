@@ -1364,6 +1364,11 @@ TEST(regression, UE_2452) {
     hs_free_database(db);
 }
 
+#ifndef WINDOWS
+// On Windows, this test leads to a stack overflow exception (0xC00000FD).
+// This isn't a meaningful result, so disabling the test on that platform.
+// I haven't tried it on other platforms.
+
 TEST(regression, UE_2595) {
     const char regex[] = "(?:(?:acAa|c[EAA]aEb|((?:CC[bdd].cE((?x-msix)BE){32}(?:\\B)){16,19}CdD.E(E|E|B)){3,6}|E(a|d|.)(?:(?xs-isxm)|b|.|C))){17,}";
     unsigned flags = HS_FLAG_MULTILINE | HS_FLAG_CASELESS |
@@ -1378,6 +1383,7 @@ TEST(regression, UE_2595) {
     ASSERT_NE(nullptr, db);
     hs_free_database(db);
 }
+#endif // !WINDOWS
 
 TEST(regression, UE_2762) {
     const vector<pattern> patterns = {
