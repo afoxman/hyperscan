@@ -92,11 +92,6 @@ else ()
 endif ()
 message(STATUS "Build date: ${BUILD_DATE}")
 
-
-if(${RAGEL} STREQUAL "RAGEL-NOTFOUND")
-    message(FATAL_ERROR "Ragel state machine compiler not found")
-endif()
-
 option(OPTIMISE "Turns off compiler optimizations (on by default unless debug output enabled or coverage testing)" TRUE)
 
 option(DEBUG_OUTPUT "Enable debug output (warning: very verbose)" FALSE)
@@ -158,15 +153,15 @@ if(MSVC OR MSVC_IDE)
         message(FATAL_ERROR "The project requires C++11 features.")
     endif()
 
-        if (WINDOWS_ICC)
-            set(ARCH_C_FLAGS "/QxHost")
-            set(ARCH_CXX_FLAGS "/QxHost")
+    if (WINDOWS_ICC)
+        set(ARCH_C_FLAGS "/QxHost")
+        set(ARCH_CXX_FLAGS "/QxHost")
         set(EXTRA_C_FLAGS "${EXTRA_C_FLAGS} /Qstd=c99 /Qrestrict /wd4267 /Qdiag-disable:remark")
         set(EXTRA_CXX_FLAGS "${EXTRA_CXX_FLAGS} /Qstd=c++11 /Qrestrict /QxHost /wd4267 /wd4800 /Qdiag-disable:remark -DBOOST_DETAIL_NO_CONTAINER_FWD -D_SCL_SECURE_NO_WARNINGS")
         set(OPT_C_FLAG "/O3")
         set(OPT_CXX_FLAG "/O2")
-        else()
-            set(MSVC_WARNS "/wd4101 /wd4146 /wd4172 /wd4200 /wd4244 /wd4267 /wd4307 /wd4334 /wd4805 /wd4996 -D_CRT_SECURE_NO_WARNINGS")
+    else()
+        set(MSVC_WARNS "/wd4101 /wd4146 /wd4172 /wd4200 /wd4244 /wd4267 /wd4307 /wd4334 /wd4805 /wd4996 -D_CRT_SECURE_NO_WARNINGS")
         set(EXTRA_C_FLAGS "${EXTRA_C_FLAGS} /EHsc ${MSVC_WARNS}")
         set(EXTRA_CXX_FLAGS "${EXTRA_CXX_FLAGS} /EHsc ${MSVC_WARNS} /wd4800 -DBOOST_DETAIL_NO_CONTAINER_FWD")
         if(OPTIMISE)
@@ -181,20 +176,20 @@ if(MSVC OR MSVC_IDE)
             set(OPT_C_FLAG "/Od")
             set(OPT_CXX_FLAG "/Od")
         endif(OPTIMISE)
-            endif()
+    endif()
 
     # strip out debug-only runtime checks
-        string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
-        string(REPLACE "/RTC1" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+    string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+    string(REPLACE "/RTC1" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
 
-        if (DISABLE_ASSERTS)
+    if (DISABLE_ASSERTS)
         set(EXTRA_C_FLAGS "${EXTRA_C_FLAGS} /DNDEBUG")
         set(EXTRA_CXX_FLAGS "${EXTRA_CXX_FLAGS} /DNDEBUG")
     endif()
 
-        # flags only used to build hs libs
-        set(HS_C_FLAGS "/Gv")
-        set(HS_CXX_FLAGS "/Gv")
+    # flags only used to build hs libs
+    set(HS_C_FLAGS "/Gv")
+    set(HS_CXX_FLAGS "/Gv")
 else()
 
     if (CMAKE_COMPILER_IS_GNUCC)
