@@ -1,0 +1,70 @@
+﻿{
+    "configurations": [
+        {
+            "name": "x64 debug",
+            "generator": "Ninja",
+            "configurationType": "Debug",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\out\\build\\x64\\debug",
+            "installRoot": "${projectDir}\\out\\install\\x64\\debug",
+            "cmakeCommandArgs": "-DBUILD_STATIC_AND_SHARED=1",
+            "buildCommandArgs": "",
+            "ctestCommandArgs": ""
+        },
+        {
+            "name": "x64-avx2 debug",
+            "generator": "Ninja",
+            "configurationType": "Debug",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\out\\build\\x64-avx2\\debug",
+            "installRoot": "${projectDir}\\out\\install\\x64-avx2\\debug",
+            "cmakeCommandArgs": "-DBUILD_STATIC_AND_SHARED=1 -DCMAKE_C_FLAGS=\"/arch:AVX2\" -DCMAKE_CXX_FLAGS=\"/arch:AVX2\"",
+            "buildCommandArgs": "",
+            "ctestCommandArgs": ""
+        },
+        {
+            "name": "x64 release",
+            "generator": "Ninja",
+            "configurationType": "Release",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\out\\build\\x64\\release",
+            "installRoot": "${projectDir}\\out\\install\\x64\\release",
+            "cmakeCommandArgs": "-DBUILD_STATIC_AND_SHARED=1",
+            "buildCommandArgs": "",
+            "ctestCommandArgs": ""
+        },
+        {
+            "name": "x64-avx2 release",
+            "generator": "Ninja",
+            "configurationType": "Release",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\out\\build\\x64-avx2\\release",
+            "installRoot": "${projectDir}\\out\\install\\x64-avx2\\release",
+            "cmakeCommandArgs": "-DBUILD_STATIC_AND_SHARED=1 -DCMAKE_C_FLAGS=\"/arch:AVX2\" -DCMAKE_CXX_FLAGS=\"/arch:AVX2\"",
+            "buildCommandArgs": "",
+            "ctestCommandArgs": ""
+        },
+        {
+            "name": "x64 minsizerel",
+            "generator": "Ninja",
+            "configurationType": "MinSizeRel",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\out\\build\\x64\\minsizerel",
+            "installRoot": "${projectDir}\\out\\install\\x64\\minsizerel",
+            "cmakeCommandArgs": "-DBUILD_STATIC_AND_SHARED=1",
+            "buildCommandArgs": "",
+            "ctestCommandArgs": ""
+        },
+        {
+            "name": "x64-avx2 minsizerel",
+            "generator": "Ninja",
+            "configurationType": "MinSizeRel",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\out\\build\\x64-avx2\\minsizerel",
+            "installRoot": "${projectDir}\\out\\install\\x64-avx2\\minsizerel",
+            "cmakeCommandArgs": "-DBUILD_STATIC_AND_SHARED=1 -DCMAKE_C_FLAGS=\"/arch:AVX2\" -DCMAKE_CXX_FLAGS=\"/arch:AVX2\"",
+            "buildCommandArgs": "",
+            "ctestCommandArgs": ""
+        }
+    ]
+}
