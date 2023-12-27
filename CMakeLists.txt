@@ -144,43 +144,58 @@ option(WINDOWS_ICC "Use Intel C++ Compiler on Windows, default off, requires ICC
 
 # TODO: per platform config files?
 
+# remove CMake's idea of optimisation
+foreach (CONFIG ${CMAKE_BUILD_TYPE} ${CMAKE_CONFIGURATION_TYPES})
+    string(REGEX REPLACE "-O[^ ]*" "" CMAKE_C_FLAGS_${CONFIG} "${CMAKE_C_FLAGS_${CONFIG}}")
+    string(REGEX REPLACE "-O[^ ]*" "" CMAKE_CXX_FLAGS_${CONFIG} "${CMAKE_CXX_FLAGS_${CONFIG}}")
+endforeach ()
+
 # TODO: windows generator on cmake always uses msvc, even if we plan to build with icc
 if(MSVC OR MSVC_IDE)
     message(STATUS "Building for Windows")
 
     if (MSVC_VERSION LESS 1700)
         message(FATAL_ERROR "The project requires C++11 features.")
-    else()
+    endif()
+
         if (WINDOWS_ICC)
             set(ARCH_C_FLAGS "/QxHost")
             set(ARCH_CXX_FLAGS "/QxHost")
-            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /O3 /Qstd=c99 /Qrestrict /wd4267 /Qdiag-disable:remark")
-            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /O2 /Qstd=c++11 /Qrestrict /QxHost /wd4267 /wd4800 /Qdiag-disable:remark -DBOOST_DETAIL_NO_CONTAINER_FWD -D_SCL_SECURE_NO_WARNINGS")
+        set(EXTRA_C_FLAGS "${EXTRA_C_FLAGS} /Qstd=c99 /Qrestrict /wd4267 /Qdiag-disable:remark")
+        set(EXTRA_CXX_FLAGS "${EXTRA_CXX_FLAGS} /Qstd=c++11 /Qrestrict /QxHost /wd4267 /wd4800 /Qdiag-disable:remark -DBOOST_DETAIL_NO_CONTAINER_FWD -D_SCL_SECURE_NO_WARNINGS")
+        set(OPT_C_FLAG "/O3")
+        set(OPT_CXX_FLAG "/O2")
         else()
             set(MSVC_WARNS "/wd4101 /wd4146 /wd4172 /wd4200 /wd4244 /wd4267 /wd4307 /wd4334 /wd4805 /wd4996 -D_CRT_SECURE_NO_WARNINGS")
-            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  /O2 ${MSVC_WARNS}")
-            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /O2 ${MSVC_WARNS} /wd4800 -DBOOST_DETAIL_NO_CONTAINER_FWD")
-        endif()
+        set(EXTRA_C_FLAGS "${EXTRA_C_FLAGS} /EHsc ${MSVC_WARNS}")
+        set(EXTRA_CXX_FLAGS "${EXTRA_CXX_FLAGS} /EHsc ${MSVC_WARNS} /wd4800 -DBOOST_DETAIL_NO_CONTAINER_FWD")
+        if(OPTIMISE)
+            if (NOT CMAKE_BUILD_TYPE MATCHES MINSIZEREL)
+                set(OPT_C_FLAG "/O2")
+                set(OPT_CXX_FLAG "/O2")
+            else ()
+                set(OPT_C_FLAG "/Os")
+                set(OPT_CXX_FLAG "/Os")
+            endif ()
+        else()
+            set(OPT_C_FLAG "/Od")
+            set(OPT_CXX_FLAG "/Od")
+        endif(OPTIMISE)
+            endif()
+
+    # strip out debug-only runtime checks
         string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
         string(REPLACE "/RTC1" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
 
         if (DISABLE_ASSERTS)
-            set(CMAKE_C_FLAGS_DEBUG "/DNDEBUG ${CMAKE_C_FLAGS_DEBUG}")
-            set(CMAKE_CXX_FLAGS_DEBUG "/DNDEBUG ${CMAKE_CXX_FLAGS_DEBUG}")
-        endif ()
+        set(EXTRA_C_FLAGS "${EXTRA_C_FLAGS} /DNDEBUG")
+        set(EXTRA_CXX_FLAGS "${EXTRA_CXX_FLAGS} /DNDEBUG")
+    endif()
 
         # flags only used to build hs libs
         set(HS_C_FLAGS "/Gv")
         set(HS_CXX_FLAGS "/Gv")
-    endif()
-
 else()
-
-    # remove CMake's idea of optimisation
-    foreach (CONFIG ${CMAKE_BUILD_TYPE} ${CMAKE_CONFIGURATION_TYPES})
-        string(REGEX REPLACE "-O[^ ]*" "" CMAKE_C_FLAGS_${CONFIG} "${CMAKE_C_FLAGS_${CONFIG}}")
-        string(REGEX REPLACE "-O[^ ]*" "" CMAKE_CXX_FLAGS_${CONFIG} "${CMAKE_CXX_FLAGS_${CONFIG}}")
-    endforeach ()
 
     if (CMAKE_COMPILER_IS_GNUCC)
         message(STATUS "gcc version ${CMAKE_C_COMPILER_VERSION}")
@@ -1360,6 +1375,7 @@ if (BUILD_STATIC_AND_SHARED OR BUILD_SHARED_LIBS)
     set_target_properties(hs_runtime_shared PROPERTIES
         VERSION ${LIB_VERSION}
         SOVERSION ${LIB_SOVERSION}
+        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
         OUTPUT_NAME hs_runtime
         MACOSX_RPATH ON
         LINKER_LANGUAGE C)
@@ -1408,6 +1424,7 @@ if (BUILD_STATIC_AND_SHARED OR BUILD_SHARED_LIBS)
         OUTPUT_NAME hs
         VERSION ${LIB_VERSION}
         SOVERSION ${LIB_SOVERSION}
+        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
         MACOSX_RPATH ON)
 
     install(TARGETS hs_shared
